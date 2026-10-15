@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EcoBin · Smart Waste Monitoring</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f7f6;--card:#fff;--tx:#0e1f1a;--mu:#5f6f69;--bd:#e2e9e6;--pr:#0f766e;--prb:#e3f4f1;--ok:#15803d;--okb:#e4f5ea;--wn:#b45309;--wnb:#fdf1dc;--bd2:#dc2626;--bdb:#fde8e8;--sh:0 1px 2px rgba(14,31,26,.05),0 4px 14px rgba(14,31,26,.04);color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1512;--card:#141f1b;--tx:#eaf3ef;--mu:#93a59e;--bd:#233029;--pr:#2dd4bf;--prb:#0f2f2b;--ok:#4ade80;--okb:#10281a;--wn:#fbbf24;--wnb:#2d2108;--bd2:#f87171;--bdb:#331616;--sh:none;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1512;--card:#141f1b;--tx:#eaf3ef;--mu:#93a59e;--bd:#233029;--pr:#2dd4bf;--prb:#0f2f2b;--ok:#4ade80;--okb:#10281a;--wn:#fbbf24;--wnb:#2d2108;--bd2:#f87171;--bdb:#331616;--sh:none;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--tx);font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.app{display:flex;min-height:100vh}
+aside{width:230px;background:var(--card);border-right:1px solid var(--bd);padding:20px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 18px;font-weight:700;font-size:17px}
+.logo{width:32px;height:32px;border-radius:9px;background:var(--pr);color:var(--card);display:grid;place-items:center}
+.brand small{display:block;font-weight:500;font-size:11px;color:var(--mu)}
+.nl{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;color:var(--mu);font-weight:500;text-decoration:none;position:relative}
+.nl:hover{background:var(--bg);color:var(--tx)}
+.nl.on{background:var(--prb);color:var(--pr);font-weight:600}
+.nl .bd{margin-left:auto;background:var(--bd2);color:#fff;font-size:11px;font-weight:700;border-radius:99px;padding:1px 7px}
+.foot{margin-top:auto;font-size:12px;color:var(--mu);padding:10px 8px;border-top:1px solid var(--bd)}
+main{flex:1;min-width:0;padding:26px 32px 40px;max-width:1180px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+h1{font-size:23px;font-weight:700;letter-spacing:-.3px}
+.sub{color:var(--mu);margin-top:2px}
+.live{display:inline-flex;align-items:center;gap:7px;background:var(--okb);color:var(--ok);font-weight:600;font-size:12px;padding:6px 12px;border-radius:99px}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--ok);animation:p 1.6s infinite}
+@keyframes p{50%{opacity:.25}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:22px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;box-shadow:var(--sh)}
+.k{color:var(--mu);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.v{font-size:30px;font-weight:700;letter-spacing:-.5px;margin-top:6px}
+.v.bad{color:var(--bd2)}
+h3{font-size:15px;font-weight:600;margin-bottom:12px}
+.two{display:grid;grid-template-columns:1.6fr 1fr;gap:14px}
+.row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--bd);cursor:pointer;text-decoration:none;color:inherit}
+.row:last-child{border:0}.row:hover .nm{color:var(--pr)}
+.ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex-shrink:0}
+.ic.critical{background:var(--bdb);color:var(--bd2)}.ic.warning{background:var(--wnb);color:var(--wn)}.ic.ok{background:var(--okb);color:var(--ok)}
+.fl{flex:1;min-width:0}.nm{font-weight:600}.mu{color:var(--mu);font-size:12px}
+.pb{height:7px;background:var(--bd);border-radius:99px;overflow:hidden;margin-top:6px}
+.pb i{display:block;height:100%;border-radius:99px;transition:width .6s}
+.critical .pb i,i.critical{background:var(--bd2)}.warning i.warning,i.warning{background:#d97706}i.ok{background:#16a34a}
+.pct{font-weight:700;min-width:44px;text-align:right}
+.pct.critical{color:var(--bd2)}.pct.warning{color:var(--wn)}.pct.ok{color:var(--ok)}
+.tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.4px}
+.tag.critical{background:var(--bdb);color:var(--bd2)}.tag.warning{background:var(--wnb);color:var(--wn)}.tag.ok{background:var(--okb);color:var(--ok)}
+.btn{background:var(--pr);color:var(--card);border:0;border-radius:10px;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer}
+.btn.s{background:var(--card);color:var(--tx);border:1px solid var(--bd)}.btn:hover{opacity:.9}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.back{background:none;border:0;color:var(--mu);font:inherit;font-weight:500;cursor:pointer;margin-bottom:14px}
+svg text{fill:var(--mu);font-family:inherit;font-size:11px}
+.mapw{background:var(--bg);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.set{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--bd)}
+.set:last-child{border:0}
+input[type=range]{accent-color:var(--pr);width:200px}
+.sw{width:42px;height:24px;border-radius:99px;background:var(--bd);border:0;position:relative;cursor:pointer;flex-shrink:0}
+.sw.on{background:var(--pr)}.sw i{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s}.sw.on i{left:21px}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:10px;font-weight:600;z-index:9}
+.chip{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--mu)}
+.login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.lc{width:100%;max-width:400px;padding:28px}
+.fm{display:grid;gap:12px}
+label{display:block;font-size:12px;font-weight:600;color:var(--mu)}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit;margin-top:4px}
+input[type=range]{padding:0;border:0;background:none}
+input:focus,select:focus{outline:2px solid var(--pr);outline-offset:1px}
+.err{color:var(--bd2);font-weight:600;font-size:13px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);padding:8px 10px;border-bottom:1px solid var(--bd)}
+td{padding:12px 10px;border-bottom:1px solid var(--bd);white-space:nowrap}
+tr:last-child td{border:0}
+.tag.role{background:var(--prb);color:var(--pr)}
+.btn.d{background:none;color:var(--bd2);border:1px solid var(--bd);padding:6px 12px}
+.btn.dd{background:var(--bd2);color:#fff;padding:6px 12px}
+@media(max-width:860px){
+ .app{flex-direction:column}
+ aside{width:100%;height:auto;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;flex-direction:row;overflow-x:auto;padding:8px 10px;align-items:center;border-right:0;border-bottom:1px solid var(--bd)}
+ .brand{padding:0 8px 0 4px}.brand small,.foot{display:none}.nl{padding:8px 10px;white-space:nowrap}
+ main{padding:18px 16px 40px}.two{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+const {useState,useEffect,useMemo}=React,h=React.createElement;
+const P={grid:'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z',pin:'M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11zM12 12a2 2 0 100-4 2 2 0 000 4z',bell:'M18 16v-5a6 6 0 10-12 0v5l-2 2h16zM10 21h4',chart:'M4 20V10M10 20V4M16 20v-7M22 20H2',set:'M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M14 4v4M8 10v4M16 16v4',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',leaf:'M5 19c0-9 5-14 14-14 0 9-5 14-14 14zM5 19l7-7',users:'M16 19v-1a4 4 0 00-4-4H7a4 4 0 00-4 4v1M9.5 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM21 19v-1a4 4 0 00-3-3.9M16 4.1a3.5 3.5 0 010 6.8',out:'M9 21H5V3h4M16 17l5-5-5-5M21 12H9'};
+const Ic=({n,s=18})=>h('svg',{width:s,height:s,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.9,strokeLinecap:'round',strokeLinejoin:'round'},h('path',{d:P[n]}));
+
+const BINS=[
+ {id:'bin-04',label:'Bin 04 · Cafeteria block',loc:'Cafeteria block',lat:5.6501,lng:-0.1867,g:91,r:42,min:2,col:'2 days ago',rp:1},
+ {id:'bin-09',label:'Bin 09 · Library entrance',loc:'Library entrance',lat:5.6512,lng:-0.1849,g:85,r:30,min:11,col:'1 day ago',rp:3},
+ {id:'bin-11',label:'Bin 11 · Lecture hall A',loc:'Lecture hall A',lat:5.6495,lng:-0.1832,g:78,r:55,min:6,col:'3 days ago',rp:2},
+ {id:'bin-07',label:'Bin 07 · Gym',loc:'Gym',lat:5.6488,lng:-0.1841,g:34,r:20,min:4,col:'6 hours ago',rp:null},
+ {id:'bin-02',label:'Bin 02 · Admin block',loc:'Admin block',lat:5.6520,lng:-0.1858,g:12,r:8,min:15,col:'today, 8:14am',rp:null}];
+const TREND=[['Mon',32],['Tue',41],['Wed',38],['Thu',52],['Fri',48],['Sat',61],['Sun',55]];
+const st=(f,t)=>f>=t?'critical':f>=t-15?'warning':'ok';
+const hist=f=>[0,4,8,12,16,20,24].map((hr,i)=>[hr+':00',Math.max(3,Math.round(f*(0.22+i*0.13)))]).map(([a,b],i,arr)=>i===6?[a,f]:[a,Math.min(b,f)]);
+
+const Bar=({v,s})=>h('div',{className:'pb'},h('i',{className:s,style:{width:v+'%'}}));
+const Stat=({k,v,bad})=>h('div',{className:'card'},h('div',{className:'k'},k),h('div',{className:'v'+(bad?' bad':'')},v));
+
+function Line({data,thr}){
+  const W=520,H=170,p=28,mx=100,x=i=>p+i*(W-p*2)/(data.length-1),y=v=>H-p-(v/mx)*(H-p*2);
+  const d=data.map((a,i)=>(i?'L':'M')+x(i)+' '+y(a[1])).join(' ');
+  return h('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%'},
+    [0,50,100].map(g=>h('g',{key:g},h('line',{x1:p,x2:W-p,y1:y(g),y2:y(g),stroke:'var(--bd)'}),h('text',{x:2,y:y(g)+4},g+'%'))),
+    thr!=null&&h('line',{x1:p,x2:W-p,y1:y(thr),y2:y(thr),stroke:'var(--bd2)',strokeDasharray:'4 4'}),
+    h('path',{d:d+` L${x(data.length-1)} ${H-p} L${p} ${H-p}Z`,fill:'var(--pr)',opacity:.1}),
+    h('path',{d,fill:'none',stroke:'var(--pr)',strokeWidth:2.5,strokeLinejoin:'round'}),
+    data.map((a,i)=>h('g',{key:i},h('circle',{cx:x(i),cy:y(a[1]),r:3.5,fill:'var(--pr)'}),h('text',{x:x(i),y:H-8,textAnchor:'middle'},a[0]))));
+}
+function Cols({data}){
+  const W=520,H=190,p=28,m=70;
+  return h('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%'},data.map(([a,v],i)=>{const bw=(W-p*2)/data.length,bh=v/m*(H-p*2);return h('g',{key:a},
+    h('rect',{x:p+i*bw+10,y:H-p-bh,width:bw-20,height:bh,rx:6,fill:'var(--pr)',opacity:v===Math.max(...data.map(d=>d[1]))?1:.55}),
+    h('text',{x:p+i*bw+bw/2,y:H-8,textAnchor:'middle'},a),h('text',{x:p+i*bw+bw/2,y:H-p-bh-6,textAnchor:'middle'},v+'%'))}));
+}
+function Donut({a}){
+  const r=52,c=2*Math.PI*r;
+  return h('svg',{viewBox:'0 0 140 140',width:150},h('circle',{cx:70,cy:70,r,fill:'none',stroke:'var(--okb)',strokeWidth:18}),
+    h('circle',{cx:70,cy:70,r,fill:'none',stroke:'var(--pr)',strokeWidth:18,strokeDasharray:`${c*a/100} ${c}`,transform:'rotate(-90 70 70)',strokeLinecap:'round'}),
+    h('text',{x:70,y:68,textAnchor:'middle',style:{fontSize:22,fontWeight:700,fill:'var(--tx)'}},a+'%'),h('text',{x:70,y:86,textAnchor:'middle'},'general'));
+}
+
+function Dash({bins,thr}){
+  const crit=bins.filter(b=>b.g>=thr).length,avg=Math.round(bins.reduce((s,b)=>s+b.g,0)/bins.length);
+  const sorted=[...bins].sort((a,b)=>b.g-a.g);
+  return h('div',null,
+    h('div',{className:'grid'},h(Stat,{k:'Bins monitored',v:bins.length}),h(Stat,{k:`Critical (≥${thr}%)`,v:crit,bad:crit>0}),h(Stat,{k:'Avg fill level',v:avg+'%'}),h(Stat,{k:'Data uptime',v:'99.2%'})),
+    h('div',{className:'two'},
+      h('div',{className:'card'},h('h3',null,'Bin status'),sorted.map(b=>{const s=st(b.g,thr);return h('a',{key:b.id,href:'#/bins/'+b.id,className:'row '+s},
+        h('div',{className:'ic '+s},h(Ic,{n:'trash'})),h('div',{className:'fl'},h('div',{className:'nm'},b.label),h(Bar,{v:b.g,s})),h('div',{className:'pct '+s},b.g+'%'))})),
+      h('div',{className:'card'},h('h3',null,'Average fill · this week'),h(Cols,{data:TREND}))));
+}
+
+function MapV({bins,thr}){
+  const [sel,setSel]=useState(bins[0].id),[route,setRoute]=useState(true);
+  const W=640,H=400,la=bins.map(b=>b.lat),lo=bins.map(b=>b.lng),a0=Math.min(...la),a1=Math.max(...la),o0=Math.min(...lo),o1=Math.max(...lo);
+  const X=b=>50+(b.lng-o0)/(o1-o0)*(W-100),Y=b=>H-50-(b.lat-a0)/(a1-a0)*(H-100);
+  const rb=bins.filter(b=>b.rp).sort((a,b)=>a.rp-b.rp),b=bins.find(x=>x.id===sel),col={critical:'#dc2626',warning:'#d97706',ok:'#16a34a'};
+  return h('div',{className:'two',style:{gridTemplateColumns:'1.7fr 1fr'}},
+    h('div',{className:'card'},h('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:12}},h('h3',{style:{margin:0}},'Campus overview'),h('button',{className:'btn s',onClick:()=>setRoute(!route)},route?'Hide route':'Show route')),
+      h('div',{className:'mapw'},h('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%'},
+        [1,2,3,4,5].map(i=>h('line',{key:'v'+i,x1:i*W/6,x2:i*W/6,y1:0,y2:H,stroke:'var(--bd)'})),[1,2,3,4].map(i=>h('line',{key:'h'+i,y1:i*H/5,y2:i*H/5,x1:0,x2:W,stroke:'var(--bd)'})),
+        route&&h('polyline',{points:rb.map(x=>X(x)+','+Y(x)).join(' '),fill:'none',stroke:'var(--pr)',strokeWidth:2.5,strokeDasharray:'6 6'}),
+        bins.map(x=>{const s=st(x.g,thr);return h('g',{key:x.id,style:{cursor:'pointer'},onClick:()=>setSel(x.id)},
+          x.id===sel&&h('circle',{cx:X(x),cy:Y(x),r:20,fill:col[s],opacity:.18}),h('circle',{cx:X(x),cy:Y(x),r:x.rp?11:8,fill:col[s],stroke:'#fff',strokeWidth:2.5}),
+          h('text',{x:X(x),y:Y(x)-18,textAnchor:'middle',style:{fontWeight:600,fill:'var(--tx)'}},x.loc+' · '+x.g+'%'),x.rp&&h('text',{x:X(x),y:Y(x)+4,textAnchor:'middle',style:{fill:'#fff',fontWeight:700}},x.rp))}))),
+      h('div',{className:'mu',style:{marginTop:10}},'Numbered markers show the suggested collection order.')),
+    h('div',{className:'card'},h('div',{className:'nm',style:{fontSize:16}},b.label),h('div',{className:'mu',style:{marginBottom:14}},'Sensor active · updated '+b.min+' min ago'),
+      h(Bar,{v:b.g,s:st(b.g,thr)}),h('div',{className:'mu',style:{margin:'14px 0 4px'}},'Compartment: general waste'),h('div',{className:'mu'},'Route priority: '+(b.rp?'stop '+b.rp:'not on route')),h('div',{className:'mu'},'Last collected: '+b.col),
+      h('a',{href:'#/bins/'+b.id,className:'btn',style:{display:'block',textAlign:'center',textDecoration:'none',marginTop:16}},'View bin detail')));
+}
+
+function Alerts({bins,thr,done}){
+  const act=bins.filter(b=>b.g>=thr-15).sort((a,b)=>b.g-a.g);
+  return h('div',{className:'two',style:{gridTemplateColumns:'1.4fr 1fr'}},
+    h('div',{className:'card'},h('h3',null,'Active alerts'),act.length?act.map(b=>{const s=st(b.g,thr);return h('a',{key:b.id,href:'#/bins/'+b.id,className:'row'},
+      h('div',{className:'ic '+s},h(Ic,{n:'bell'})),h('div',{className:'fl'},h('div',{className:'nm'},b.label),h('div',{className:'mu'},s==='critical'?`${b.g}% full · needs collection`:`${b.g}% · approaching threshold`)),h('span',{className:'tag '+s},s))}):h('div',{className:'mu'},'All bins are within limits. 🎉')),
+    h('div',{className:'card'},h('h3',null,'Resolved today'),done.length?done.map((t,i)=>h('div',{key:i,className:'row',style:{cursor:'default'}},h('div',{className:'ic ok'},h(Ic,{n:'leaf'})),h('div',{className:'fl'},t))):h('div',{className:'mu'},'Nothing resolved yet.')));
+}
+
+function Analytics({bins}){
+  return h('div',null,
+    h('div',{className:'grid'},h(Stat,{k:'Fill accuracy',v:'96.8%'}),h(Stat,{k:'Data delivery rate',v:'97.4%'}),h(Stat,{k:'Collections made',v:42}),h(Stat,{k:'Avg fill now',v:Math.round(bins.reduce((s,b)=>s+b.g,0)/bins.length)+'%'})),
+    h('div',{className:'two'},h('div',{className:'card'},h('h3',null,'Average fill trend'),h(Line,{data:TREND})),
+      h('div',{className:'card',style:{textAlign:'center'}},h('h3',null,'Waste split'),h(Donut,{a:64}),h('div',{className:'mu',style:{marginTop:8}},'64% general · 36% recyclable'))));
+}
+
+function Detail({id,bins,thr,collect}){
+  const b=bins.find(x=>x.id===id);
+  if(!b)return h('div',null,h('p',null,'Bin not found.'),h('a',{href:'#/'},'Back to dashboard'));
+  const s=st(b.g,thr);
+  return h('div',{style:{maxWidth:760}},h('button',{className:'back',onClick:()=>location.hash='#/'},'← Back to dashboard'),
+    h('div',{className:'top'},h('div',null,h('h1',null,b.label),h('div',{className:'sub'},'Sensor active · last reading '+b.min+' min ago')),h('span',{className:'tag '+s},s)),
+    h('div',{className:'grid',style:{gridTemplateColumns:'1fr 1fr'}},
+      h('div',{className:'card'},h('div',{className:'k'},'General waste'),h('div',{className:'v'},b.g+'%'),h(Bar,{v:b.g,s})),
+      h('div',{className:'card'},h('div',{className:'k'},'Recyclable'),h('div',{className:'v'},b.r+'%'),h(Bar,{v:b.r,s:st(b.r,thr)}))),
+    h('div',{className:'card'},h('h3',null,'Fill level · last 24h'),h(Line,{data:hist(b.g),thr}),h('div',{className:'mu',style:{marginTop:8}},'Last collected: '+b.col)),
+    h('div',{className:'acts'},h('button',{className:'btn',onClick:()=>collect(b.id)},'✓ Mark collected'),h('button',{className:'btn s',onClick:()=>location.hash='#/map'},'View on map')));
+}
+
+function Settings({thr,setThr,toast}){
+  const [em,setEm]=useState(true),[sms,setSms]=useState(false);
+  const Sw=({v,f})=>h('button',{className:'sw'+(v?' on':''),onClick:()=>f(!v),'aria-pressed':v},h('i'));
+  return h('div',{className:'card',style:{maxWidth:620}},
+    h('div',{className:'set'},h('div',null,h('div',{className:'nm'},'Alert threshold'),h('div',{className:'mu'},'Bins at or above this level trigger a collection alert.')),h('div',{style:{display:'flex',gap:10,alignItems:'center'}},h('input',{type:'range',min:50,max:95,value:thr,onChange:e=>setThr(+e.target.value)}),h('b',null,thr+'%'))),
+    h('div',{className:'set'},h('div',{className:'nm'},'Email alerts'),h(Sw,{v:em,f:setEm})),
+    h('div',{className:'set'},h('div',{className:'nm'},'SMS alerts'),h(Sw,{v:sms,f:setSms})),
+    h('div',{className:'acts'},h('button',{className:'btn',onClick:()=>toast('Settings saved')},'Save changes')));
+}
+
+const SK='ecobin_users_v1',SS='ecobin_sess';
+const loadU=()=>{try{const s=localStorage.getItem(SK);if(s)return JSON.parse(s)}catch(e){}return[{id:1,name:'Administrator',username:'admin',password:'admin123',role:'admin'}]};
+const saveU=u=>{try{localStorage.setItem(SK,JSON.stringify(u))}catch(e){}};
+const loadS=()=>{try{return +sessionStorage.getItem(SS)||null}catch(e){return null}};
+
+function Login({users,onIn}){
+  const [u,setU]=useState(''),[p,setP]=useState(''),[e,setE]=useState('');
+  const go=ev=>{ev.preventDefault();const x=users.find(y=>y.username.toLowerCase()===u.trim().toLowerCase()&&y.password===p);x?onIn(x.id):setE('Invalid username or password.')};
+  return h('div',{className:'login'},h('div',{className:'card lc'},
+    h('div',{className:'brand',style:{padding:'0 0 18px'}},h('div',{className:'logo'},h(Ic,{n:'leaf'})),h('div',null,'EcoBin',h('small',null,'Smart waste monitoring'))),
+    h('h1',{style:{fontSize:21}},'Welcome back'),h('div',{className:'sub',style:{marginBottom:16}},'Sign in to manage your campus bins.'),
+    h('form',{className:'fm',onSubmit:go},
+      h('label',null,'Username',h('input',{required:true,autoFocus:true,autoComplete:'username',value:u,onChange:ev=>setU(ev.target.value)})),
+      h('label',null,'Password',h('input',{required:true,type:'password',autoComplete:'current-password',value:p,onChange:ev=>setP(ev.target.value)})),
+      e&&h('div',{className:'err'},e),h('button',{className:'btn'},'Sign in')),
+    h('div',{className:'mu',style:{marginTop:14,textAlign:'center'}},'Demo account: admin / admin123')));
+}
+
+function Users({users,setUsers,me,toast}){
+  const empty={name:'',username:'',password:'',role:'operator'};
+  const [v,setV]=useState(empty),[e,setE]=useState(''),[cf,setCf]=useState(null);
+  const set=k=>ev=>setV({...v,[k]:ev.target.value});
+  const add=ev=>{ev.preventDefault();const un=v.username.trim();
+    if(users.some(x=>x.username.toLowerCase()===un.toLowerCase()))return setE('That username is already taken.');
+    if(v.password.length<6)return setE('Password must be at least 6 characters.');
+    setE('');setUsers([...users,{id:Date.now(),name:v.name.trim()||un,username:un,password:v.password,role:v.role}]);setV(empty);toast('User added')};
+  const del=id=>{setUsers(users.filter(x=>x.id!==id));setCf(null);toast('User deleted')};
+  return h('div',null,
+    h('div',{className:'card',style:{marginBottom:14}},h('h3',null,'Add user'),
+      h('form',{className:'fm',style:{gridTemplateColumns:'repeat(auto-fit,minmax(170px,1fr))',alignItems:'end'},onSubmit:add},
+        h('label',null,'Full name',h('input',{value:v.name,onChange:set('name')})),
+        h('label',null,'Username',h('input',{required:true,value:v.username,onChange:set('username')})),
+        h('label',null,'Password',h('input',{required:true,type:'password',value:v.password,onChange:set('password')})),
+        h('label',null,'Role',h('select',{value:v.role,onChange:set('role')},h('option',{value:'operator'},'Operator'),h('option',{value:'admin'},'Admin'))),
+        h('button',{className:'btn'},'Add user')),
+      e&&h('div',{className:'err',style:{marginTop:10}},e)),
+    h('div',{className:'card',style:{overflowX:'auto'}},h('h3',null,'Users ('+users.length+')'),
+      h('table',null,h('thead',null,h('tr',null,['User','Username','Role',''].map(x=>h('th',{key:x},x)))),
+        h('tbody',null,users.map(u=>h('tr',{key:u.id},
+          h('td',null,h('span',{className:'nm'},u.name),u.id===me.id&&h('span',{className:'mu'},' (you)')),
+          h('td',{className:'mu'},'@'+u.username),
+          h('td',null,h('span',{className:'tag role'},u.role)),
+          h('td',{style:{textAlign:'right'}},u.id!==me.id&&(cf===u.id
+            ?h('span',null,h('button',{className:'btn dd',onClick:()=>del(u.id)},'Confirm delete'),' ',h('button',{className:'btn s',style:{padding:'6px 12px'},onClick:()=>setCf(null)},'Cancel'))
+            :h('button',{className:'btn d',onClick:()=>setCf(u.id)},'Delete')))))))));
+}
+
+const NAV=[['/','Dashboard','grid'],['/map','Map','pin'],['/alerts','Alerts','bell'],['/analytics','Analytics','chart'],['/users','Users','users'],['/settings','Settings','set']];
+const TITLES={'/':['Dashboard','Real-time overview of every monitored bin'],'/map':['Map','Bin locations and the suggested collection route'],'/alerts':['Alerts','Bins that need attention'],'/analytics':['Analytics','Fill trends and system performance'],'/users':['Users','Add and remove people who can access EcoBin'],'/settings':['Settings','Thresholds and notifications']};
+
+function App(){
+  const [bins,setBins]=useState(BINS),[thr,setThr]=useState(80),[done,setDone]=useState(['Bin 02 · Admin block collected at 8:14am']),[msg,setMsg]=useState(''),[route,setRoute]=useState(location.hash.slice(1)||'/');
+  useEffect(()=>{const f=()=>{setRoute(location.hash.slice(1)||'/');window.scrollTo(0,0)};addEventListener('hashchange',f);return()=>removeEventListener('hashchange',f)},[]);
+  const [users,setUsersS]=useState(loadU),[uid,setUid]=useState(loadS);
+  const user=users.find(u=>u.id===uid),setUsers=u=>{setUsersS(u);saveU(u)};
+  const logout=()=>{setUid(null);try{sessionStorage.removeItem(SS)}catch(e){}};
+  if(!user)return h(Login,{users,onIn:id=>{setUid(id);try{sessionStorage.setItem(SS,id)}catch(e){}}});
+  const toast=t=>{setMsg(t);setTimeout(()=>setMsg(''),2200)};
+  const collect=id=>{const b=bins.find(x=>x.id===id),t=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+    setBins(bins.map(x=>x.id===id?{...x,g:4,r:3,col:'just now',min:0,rp:null}:x));setDone([b.label+' collected at '+t,...done]);toast(b.label+' marked collected');location.hash='#/alerts'};
+  const alertN=bins.filter(b=>b.g>=thr).length,m=route.match(/^\/bins\/(.+)$/),key=m?'/':(route==='/users'&&user.role!=='admin'?'/':route),[t1,t2]=TITLES[key]||TITLES['/'];
+  let page;
+  if(m)page=h(Detail,{id:m[1],bins,thr,collect});else if(route==='/map')page=h(MapV,{bins,thr});else if(route==='/alerts')page=h(Alerts,{bins,thr,done});
+  else if(route==='/analytics')page=h(Analytics,{bins});else if(route==='/settings')page=h(Settings,{thr,setThr,toast});else if(route==='/users'&&user.role==='admin')page=h(Users,{users,setUsers,me:user,toast});else page=h(Dash,{bins,thr});
+  return h('div',{className:'app'},
+    h('aside',null,h('div',{className:'brand'},h('div',{className:'logo'},h(Ic,{n:'leaf',s:18})),h('div',null,'EcoBin',h('small',null,'Smart waste monitoring'))),
+      NAV.filter(n=>n[0]!=='/users'||user.role==='admin').map(([to,l,i])=>h('a',{key:to,href:'#'+to,className:'nl'+(route===to||(to==='/'&&m)?' on':'')},h(Ic,{n:i}),l,to==='/alerts'&&alertN>0&&h('span',{className:'bd'},alertN))),
+      h('div',{className:'foot'},user.name+' · '+user.role),h('button',{className:'nl',style:{border:0,background:'none',cursor:'pointer',font:'inherit',textAlign:'left'},onClick:logout},h(Ic,{n:'out'}),'Log out')),
+    h('main',null,!m&&h('div',{className:'top'},h('div',null,h('h1',null,t1),h('div',{className:'sub'},t2)),h('span',{className:'live'},h('i'),'Live · synced 2 min ago')),page),
+    msg&&h('div',{className:'toast'},msg));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>
